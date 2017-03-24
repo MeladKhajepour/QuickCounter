@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">QuickCounter</string>
+    <string name="disable_notifs_header">Disable notifications</string>
+    <string name="disable_notifs_description">By turning off notifications, editing the label must 
+        be done from this page. Long press counter to reset.</string>
+    <string name="change_notifs_description">Enter a new value in seconds for notifications to 
+        automatically dismiss</string>
+    <string name="change_notifs_header">Change notification timeout</string>
+    <string-array name="change_notifs_dropdown">
+        <item>2 seconds</item>
+        <item>3 seconds</item>
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>No Timeout</item>
+    </string-array>
 </resources>

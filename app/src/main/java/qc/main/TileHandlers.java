@@ -12,8 +12,7 @@ import utils.TileUtils;
 
 class TileHandlers {
 
-    static void handleOnStartCommand(
-            QCTileService ts, Intent intent, SharedPreferences prefs) {
+    static void handleOnStartCommand(QCTileService ts, Intent intent, SharedPreferences prefs) {
 
         if(intent.getBooleanExtra("update", false)) {
             new TileActions(ts).updateTile();
@@ -22,7 +21,8 @@ class TileHandlers {
             new NotificationUtils(ts).dismissNotification();
         }
 
-        new TileUtils(prefs);
+        NotificationUtils.setPrefs(prefs);
+        TileUtils.setPrefs(prefs);
     }
 
     static void onClick(QCTileService ts) {

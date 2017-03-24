@@ -17,7 +17,8 @@ public class TileUtils {
     private static Integer count = 0;
     private static String label = "";
 
-    public TileUtils(SharedPreferences prefs) {
+    public static void setPrefs(SharedPreferences prefs) {
+
         count = prefs.getInt("count", 0);
         label = prefs.getString("label", "");
     }

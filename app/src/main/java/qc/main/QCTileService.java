@@ -12,9 +12,9 @@ public class QCTileService extends TileService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         super.onStartCommand(intent, flags, startId);
-        SharedPreferences prefs =
-                getSharedPreferences("prefs", 0);
+        SharedPreferences prefs = getSharedPreferences("prefs", 0);
         TileHandlers.handleOnStartCommand(this, intent, prefs);
 
         return START_STICKY;

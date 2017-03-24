@@ -5,8 +5,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import qc.main.QCTileService;
 import qc.main.R;
@@ -24,10 +29,19 @@ public class NotificationUtils {
     private final Context context;
     private final NotificationManager nm;
 
+    public static int notifTimeout;
+    public static boolean notificationsEnabled = true;
+
     public NotificationUtils(QCTileService tileService) {
 
         context = tileService.getApplicationContext();
         nm = (NotificationManager) tileService.getSystemService(NOTIFICATION_SERVICE);
+    }
+
+    public static void setPrefs(SharedPreferences prefs) {
+
+        notifTimeout = prefs.getInt("timeout", 2000);
+        notificationsEnabled = prefs.getBoolean("notifsEnabled", true);
     }
 
     public void createNotification() {
@@ -43,6 +57,15 @@ public class NotificationUtils {
                 .setAutoCancel(true);
 
         nm.notify(notificationId, builder.build());
+
+        if(notificationsEnabled && notifTimeout > 0) {
+            Handler h = new Handler();
+                h.postDelayed(new Runnable() {
+                    public void run() {
+                        dismissNotification();
+                    }
+            }, notifTimeout);
+        }
     }
 
     public void dismissNotification() {

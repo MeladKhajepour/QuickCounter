@@ -8,20 +8,16 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Icon;
 
+import static utils.Settings.COUNT;
+import static utils.Settings.LABEL;
+import static utils.Settings.count;
+import static utils.Settings.label;
+
 /**
  * Created by Melad Khajepour
  */
 
-public class TileUtils {
-
-    private static Integer count = 0;
-    private static String label = "";
-
-    public static void setPrefs(SharedPreferences prefs) {
-
-        count = prefs.getInt("count", 0);
-        label = prefs.getString("label", "");
-    }
+public class Counter {
 
     public static Icon createIcon() {
 
@@ -29,7 +25,7 @@ public class TileUtils {
         Bitmap bitmap = Bitmap.createBitmap(144, 144, Bitmap.Config.ARGB_8888);
         Paint paint = new Paint();
         Rect bounds = new Rect();
-        String txt = count.toString();
+        String txt = getCount().toString();
 
         paint.setTextSize(140.0f);
         paint.setColor(Color.WHITE);
@@ -44,22 +40,44 @@ public class TileUtils {
     }
 
     public static void incrementCount() {
-        count += 1;
+        count++;
     }
 
-    static void resetCount() {
+    public static void resetCount() {
         count = 0;
     }
 
     public static Integer getCount () {
+
+        if(count == null) {
+            count = 0;
+        }
+
         return count;
     }
 
-    static void setLabel(String newLabel) {
+    public static void setLabel(String newLabel) {
         label = newLabel;
     }
 
+    public static void resetLabel() {
+        label = "";
+    }
+
     public static String getLabel() {
+
+        if(label == null) {
+            label = "";
+        }
+
         return label;
+    }
+
+    public static void saveTile(SharedPreferences prefs) {
+
+        prefs.edit()
+                .putInt(COUNT, getCount())
+                .putString(LABEL, getLabel())
+                .apply();
     }
 }

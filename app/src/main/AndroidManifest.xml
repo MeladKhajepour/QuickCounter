@@ -12,27 +12,33 @@
         <activity android:name="qc.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="qc.main.ErrorPage">
+        </activity>
         <service
             android:name="qc.main.QCTileService"
-            android:label="test"
+            android:label="NotifiCounter"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
-                <action
-                    android:name="android.service.quicksettings.action.QS_TILE"/>
+                <action android:name="android.service.quicksettings.action.QS_TILE"/>
             </intent-filter>
         </service>
+        <receiver android:name="utils.Receivers$UpdateLabel" android:enabled="true" android:exported="false">
+            <intent-filter>
+                <action android:name="label_action" />
+            </intent-filter>
+        </receiver>
         <receiver android:name="utils.Receivers$ResetCounter" android:enabled="true" android:exported="false">
             <intent-filter>
                 <action android:name="reset_action" />
             </intent-filter>
         </receiver>
-        <receiver android:name="utils.Receivers$UpdateLabel" android:enabled="true" android:exported="false">
+        <receiver android:name="utils.Receivers$ResetAll" android:enabled="true" android:exported="false">
             <intent-filter>
-                <action android:name="label_action" />
+                <action android:name="reset_all_action" />
             </intent-filter>
         </receiver>
     </application>

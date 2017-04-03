@@ -1,16 +1,46 @@
 <resources>
-    <string name="app_name">QuickCounter</string>
-    <string name="disable_notifs_header">Disable notifications</string>
-    <string name="disable_notifs_description">By turning off notifications, editing the label must 
-        be done from this page. Long press counter to reset.</string>
-    <string name="change_notifs_description">Enter a new value in seconds for notifications to 
-        automatically dismiss</string>
-    <string name="change_notifs_header">Change notification timeout</string>
+    <string name="app_name">
+        QuickCounter
+    </string>
+    <string name="disable_notifs_header">
+        Notifications
+    </string>
+    <string name="disable_notifs_description">
+        Updating the label or resetting the count must be done from this page if
+        notifications are disabled. Long pressing the tile will bring you here.
+    </string>
+    <string name="change_notifs_header">
+        Change notification timeout
+    </string>
+    <string name="change_notifs_description">
+        Select a timeout for notifications to auto-dismiss.
+    </string>
+    <string name="timeout_enabled">
+        Disable notification timeout
+    </string>
+    <string name="select_actions_header">
+        Notification actions
+    </string>
+    <string name="select_actions_description">
+        Select which actions to present in the notification.
+    </string>
+    <string name="action_update_label">Update label</string>
+    <string name="action_reset_all">Reset all</string>
+    <string name="action_reset_counter">Reset counter</string>
+    <string name="dismiss_on_action">Dismiss notifications on action</string>
+    <string name="change_label">
+        Change label
+    </string>
+    <string name="enter_label">
+        Enter a new label
+    </string>
+    <string name="apply">
+        Apply
+    </string>
+    <string name="reset_count">Reset Count</string>
     <string-array name="change_notifs_dropdown">
-        <item>2 seconds</item>
         <item>3 seconds</item>
         <item>5 seconds</item>
-        <item>10 seconds</item>
-        <item>No Timeout</item>
+        <item>8 seconds</item>
     </string-array>
 </resources>

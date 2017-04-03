@@ -1,7 +1,14 @@
 package qc.main;
 
+import android.content.SharedPreferences;
+import android.service.quicksettings.Tile;
+
 import utils.NotificationUtils;
-import utils.TileUtils;
+import utils.Settings;
+import utils.Counter;
+
+import static utils.Settings.PREFS;
+import static utils.Settings.notificationsEnabled;
 
 /**
  * Created by Melad Khajepour
@@ -10,19 +17,33 @@ import utils.TileUtils;
 class TileActions {
 
     private QCTileService ts;
+    private SharedPreferences prefs;
 
     TileActions(QCTileService tileService) {
         ts = tileService;
+        prefs = ts.getSharedPreferences(PREFS, 0);
+    }
+
+    void onCreate() {
+        new Settings(prefs);
+    }
+
+    void onStartListening() {
+        updateTile();
+    }
+
+    void onStopListening() {
+        Counter.saveTile(prefs);
     }
 
     void onClick() {
 
-        TileUtils.incrementCount();
-        new NotificationUtils(ts).createNotification();
-        updateTile();
-    }
+        Counter.incrementCount();
 
-    void onStartListening() {
+        if(notificationsEnabled) {
+            new NotificationUtils(ts).createNotification();
+        }
+
         updateTile();
     }
 
@@ -30,15 +51,19 @@ class TileActions {
         updateTile();
     }
 
+    void onTileRemoved() {
+        Counter.resetCount();
+        Counter.resetLabel();
+    }
+
     void updateTile() {
 
-        ts.getSharedPreferences("prefs", 0).edit()
-                .putInt("count", TileUtils.getCount())
-                .putString("label", TileUtils.getLabel())
-                .apply();
+        Tile tile = ts.getQsTile();
 
-        ts.getQsTile().setLabel(TileUtils.getLabel());
-        ts.getQsTile().setIcon(TileUtils.createIcon());
-        ts.getQsTile().updateTile();
+        if (tile != null) {
+            tile.setLabel(Counter.getLabel());
+            tile.setIcon(Counter.createIcon());
+            tile.updateTile();
+        }
     }
 }

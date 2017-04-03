@@ -5,18 +5,19 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.graphics.drawable.Icon;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.RemoteInput;
+import android.app.RemoteInput;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
+import qc.main.MainActivity;
 import qc.main.QCTileService;
 import qc.main.R;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static utils.Settings.notifTimeout;
+import static utils.Settings.resetAllAction;
+import static utils.Settings.resetCounterAction;
+import static utils.Settings.resetLabelAction;
 
 
 /**
@@ -26,44 +27,46 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 public class NotificationUtils {
 
     private final int notificationId = 0;
-    private final Context context;
+    private final Context ctx;
     private final NotificationManager nm;
+    private boolean handlerSet = false;
 
-    public static int notifTimeout;
-    public static boolean notificationsEnabled = true;
+    public NotificationUtils(QCTileService ts) {
 
-    public NotificationUtils(QCTileService tileService) {
-
-        context = tileService.getApplicationContext();
-        nm = (NotificationManager) tileService.getSystemService(NOTIFICATION_SERVICE);
-    }
-
-    public static void setPrefs(SharedPreferences prefs) {
-
-        notifTimeout = prefs.getInt("timeout", 2000);
-        notificationsEnabled = prefs.getBoolean("notifsEnabled", true);
+        ctx = ts.getApplicationContext();
+        nm = (NotificationManager) ts.getSystemService(NOTIFICATION_SERVICE);
     }
 
     public void createNotification() {
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        Notification.Builder builder = new Notification.Builder(ctx);
 
-        builder.setSmallIcon(R.drawable.ic_refresh_black_24dp)
-                .setContentTitle("Expand for actions")
-                .setContentText("Counter is at " + TileUtils.getCount() + ".")
-                .addAction(changeOrResetLabelAction())
-                .addAction(resetCounterAction())
-                .setPriority(Notification.PRIORITY_MAX)
-                .setAutoCancel(true);
+        builder.setPriority(Notification.PRIORITY_MAX)
+                .setSmallIcon(Counter.createIcon())
+                .setContentTitle("Expand for actions. Counter is at " + Counter.getCount() + ".")
+                .setAutoCancel(true)
+                .setContentIntent(activityPendingIntent(MainActivity.class));
+
+        if(resetLabelAction) {
+            builder.addAction(changeOrResetLabelAction());
+        }
+        if(resetAllAction) {
+            builder.addAction(resetAllAction());
+        }
+        if(resetCounterAction) {
+            builder.addAction(resetCounterAction());
+        }
 
         nm.notify(notificationId, builder.build());
 
-        if(notificationsEnabled && notifTimeout > 0) {
+        if(notifTimeout > 0 && !handlerSet) {
             Handler h = new Handler();
-                h.postDelayed(new Runnable() {
-                    public void run() {
-                        dismissNotification();
-                    }
+            handlerSet = true;
+            h.postDelayed(new Runnable() {
+                public void run() {
+                    dismissNotification();
+                    handlerSet = false;
+                }
             }, notifTimeout);
         }
     }
@@ -72,24 +75,39 @@ public class NotificationUtils {
         nm.cancel(notificationId);
     }
 
-    private NotificationCompat.Action changeOrResetLabelAction() {
+    private Notification.Action changeOrResetLabelAction() {
 
-        return new NotificationCompat.Action.Builder(
-                R.drawable.ic_refresh_black_24dp, "Change or Reset Label",
-                pendingIntent("label_action")).addRemoteInput(
-                new RemoteInput.Builder(Receivers.REMOTE_INPUT_ID).setLabel(
-                        "Enter new label or leave blank to reset").build()
-        ).build();
+        return new Notification.Action.Builder(
+                Icon.createWithResource(ctx, R.drawable.ic_refresh_black_24dp),
+                "Change Label",
+                broadcastPendingIntent("label_action")).addRemoteInput(
+                    new RemoteInput.Builder(Receivers.REMOTE_INPUT_ID).setLabel(
+                        "Enter new label or leave blank to reset").build()).build();
     }
 
-    private NotificationCompat.Action resetCounterAction() {
+    private Notification.Action resetAllAction() {
 
-        return new NotificationCompat.Action.Builder(
-                R.drawable.ic_refresh_black_24dp, "Reset Counter",
-                pendingIntent("reset_action")).build();
+        return new Notification.Action.Builder(
+                Icon.createWithResource(ctx, R.drawable.ic_refresh_black_24dp),
+                "Reset All",
+                broadcastPendingIntent("reset_all_action")).build();
     }
 
-    private PendingIntent pendingIntent(String activity) {
-        return PendingIntent.getBroadcast(context, 0, new Intent(activity), 0);
+    private Notification.Action resetCounterAction() {
+
+        return new Notification.Action.Builder(
+                Icon.createWithResource(ctx, R.drawable.ic_refresh_black_24dp),
+                "Reset Count",
+                broadcastPendingIntent("reset_action")).build();
+    }
+
+    private PendingIntent activityPendingIntent(Class activity) {
+
+        return PendingIntent.getActivity(ctx, 0, new Intent(ctx, activity), 0);
+    }
+
+    private PendingIntent broadcastPendingIntent(String activity) {
+
+        return PendingIntent.getBroadcast(ctx, 0, new Intent(activity), 0);
     }
 }
